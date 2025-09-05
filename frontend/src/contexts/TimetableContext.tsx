@@ -402,18 +402,12 @@ export const TimetableProvider: React.FC<TimetableProviderProps> = ({ children }
   const generateTimetable = useCallback(async () => {
     setGenerating(true);
     try {
-      const generationData = {
+      const result = await timetableService.generateAdvancedTimetable({
         program_id: formData.program_id,
         semester: formData.semester,
         academic_year: formData.academic_year,
-        constraints: formData.constraints,
-        preferences: {
-          working_days: formData.working_days,
-          time_slots: formData.time_slots,
-        },
-      };
-
-      const result = await timetableService.generateTimetable(generationData);
+        title: formData.title || `AI Generated Timetable - ${formData.academic_year}`,
+      });
       setCurrentTimetable(result);
       console.log('Timetable generated successfully');
     } catch (error) {

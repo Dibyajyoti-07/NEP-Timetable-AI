@@ -9,13 +9,14 @@ class TimeSlot(BaseModel):
     end_time: str = Field(..., description="End time (HH:MM format)")
     duration_minutes: int = Field(..., description="Duration in minutes")
 
+# inside TimetableEntry
 class TimetableEntry(BaseModel):
     course_id: str = Field(..., description="Course ID")
     faculty_id: str = Field(..., description="Faculty ID")
     room_id: str = Field(..., description="Room ID")
+    group_id: Optional[str] = Field(None, description="Student group / lab subgroup ID")
     time_slot: TimeSlot = Field(..., description="Time slot details")
-    entry_type: str = Field(default="lecture", description="Type of entry (lecture, lab, tutorial)")
-    is_mandatory: bool = Field(default=True, description="Whether attendance is mandatory")
+
 
 class TimetableBase(BaseModel):
     title: str = Field(..., description="Timetable title")

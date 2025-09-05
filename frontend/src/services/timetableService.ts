@@ -341,6 +341,17 @@ class TimetableService {
     return response.data;
   }
 
+  // Advanced AI-powered generation
+  async generateAdvancedTimetable(data: {
+    program_id: string;
+    semester: number;
+    academic_year: string;
+    title?: string;
+  }): Promise<any> {
+    const response = await this.api.post('/timetable/generate-advanced', data);
+    return response.data;
+  }
+
   async optimizeTimetable(id: string, preferences?: Record<string, any>): Promise<Timetable> {
     const response = await this.api.post(`/timetable/${id}/optimize`, { preferences });
     return response.data;

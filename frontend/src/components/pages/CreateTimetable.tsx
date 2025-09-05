@@ -20,7 +20,6 @@ import {
   CheckCircle as GenerateIcon,
   Save as SaveIcon,
   SaveAlt as SaveDraftIcon,
-  PlayArrow as GenerateAIIcon,
   School as AcademicIcon,
 } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
@@ -33,6 +32,7 @@ import FacultyDataTab from './CreateTimetable/FacultyDataTab';
 import StudentGroupsTab from './CreateTimetable/StudentGroupsTab';
 import TimeRulesTab from './CreateTimetable/TimeRulesTab';
 import InfrastructureDataTab from './CreateTimetable/RoomsTab';
+import GenerateReviewTab from './CreateTimetable/GenerateReviewTab';
 
 // Tab configuration with icons and validation
 const tabConfig = [
@@ -82,16 +82,7 @@ const tabConfig = [
     id: 'generate',
     label: 'Generate', 
     icon: <GenerateIcon />,
-    component: () => (
-      <Box sx={{ p: 4, textAlign: 'center' }}>
-        <Typography variant="h5" sx={{ mb: 2, color: 'white' }}>
-          Review & Generate Timetable
-        </Typography>
-        <Typography sx={{ mb: 3, color: '#b0b0b0' }}>
-          Review all your settings and generate the AI-powered timetable.
-        </Typography>
-      </Box>
-    ),
+    component: GenerateReviewTab,
     description: 'Review and generate final timetable'
   }
 ];
@@ -110,11 +101,9 @@ const CreateTimetableInner: React.FC = () => {
     formData,
     loading,
     saving,
-    generating,
     loadTimetable,
     saveDraft,
     saveTimetable,
-    generateTimetable,
     loadPrograms,
     validateCurrentTab,
     getValidationErrors,
@@ -203,21 +192,6 @@ const CreateTimetableInner: React.FC = () => {
     }
   };
 
-  const handleGenerate = async () => {
-    try {
-      await generateTimetable();
-      setNotification({ 
-        message: 'Timetable generated successfully!', 
-        type: 'success' 
-      });
-    } catch (error) {
-      console.error('Generate error:', error);
-      setNotification({ 
-        message: 'Failed to generate timetable', 
-        type: 'error' 
-      });
-    }
-  };
 
   const handleCloseNotification = () => {
     setNotification(null);
@@ -418,40 +392,6 @@ const CreateTimetableInner: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Floating Generate Button (shown only on last tab) */}
-      {activeTab === tabConfig.length - 1 && (
-        <Box sx={{ 
-          position: 'fixed',
-          bottom: 24,
-          right: 24,
-          zIndex: 1000
-        }}>
-          <Button
-            variant="contained"
-            color="success"
-            size="large"
-            startIcon={generating ? <CircularProgress size={20} color="inherit" /> : <GenerateAIIcon />}
-            onClick={handleGenerate}
-            disabled={generating || progress < 80}
-            sx={{
-              px: 3,
-              py: 1.5,
-              fontSize: '1rem',
-              fontWeight: 600,
-              boxShadow: '0 4px 20px rgba(76, 175, 80, 0.4)',
-              '&:hover': {
-                boxShadow: '0 6px 24px rgba(76, 175, 80, 0.6)',
-              },
-              '&:disabled': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: 'rgba(255, 255, 255, 0.3)',
-              }
-            }}
-          >
-            {generating ? 'Generating...' : 'Generate AI Timetable'}
-          </Button>
-        </Box>
-      )}
 
       {/* Notification Snackbar */}
       <Snackbar
