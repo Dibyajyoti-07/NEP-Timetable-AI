@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+ENV/
+.env/
+.venv/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+
+# Environment and secrets
+.env
+.env.*
+*.env
+
+# Log files
+*.log
+
+# Test and debug scripts
+backend/clean_incomplete_timetables.py
+backend/clean_incomplete_rules.py
+backend/clean_incomplete_programs.py
+backend/list_timetables.py
+backend/insert_default_rule.py
+backend/check_token_expiration.py
+backend/check_faculty_data.py
+backend/check_db_courses.py
+backend/check_database.py
+backend/create_admin.py
+backend/get_admin_token.py
+backend/update_token_config.py
+backend/populate_rooms.py
+backend/populate_courses.py
+backend/clean_faculty_data.py
+backend/scripts/mock_generate.py
+tmp_request_debug.py
+test_student_groups_api.py
+frontend/test-admin-login.js
