@@ -350,10 +350,17 @@ const CreateTimetableInner: React.FC = () => {
                 sx={{ 
                   color: 'white', 
                   borderColor: 'rgba(255,255,255,0.3)',
-                  '&:hover': { borderColor: 'rgba(255,255,255,0.5)' },
+                  background: 'linear-gradient(45deg, rgba(255,255,255,0.05), rgba(255,255,255,0.1))',
+                  '&:hover': { 
+                    borderColor: 'rgba(255,255,255,0.5)',
+                    background: 'linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.15))',
+                    transform: 'translateY(-1px)',
+                    boxShadow: '0 4px 8px rgba(255,255,255,0.1)'
+                  },
                   fontSize: '0.75rem',
                   py: 0.5,
-                  px: 1.5
+                  px: 1.5,
+                  transition: 'all 0.2s ease-in-out'
                 }}
               >
                 {saving ? 'Saving...' : 'Save Draft'}
@@ -368,7 +375,15 @@ const CreateTimetableInner: React.FC = () => {
                 sx={{
                   fontSize: '0.75rem',
                   py: 0.5,
-                  px: 1.5
+                  px: 1.5,
+                  background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
+                  boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
+                  '&:hover': {
+                    background: 'linear-gradient(45deg, #42a5f5, #1976d2)',
+                    transform: 'translateY(-1px)',
+                    boxShadow: '0 6px 16px rgba(25, 118, 210, 0.4)'
+                  },
+                  transition: 'all 0.2s ease-in-out'
                 }}
               >
                 Save

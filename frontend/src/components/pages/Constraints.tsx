@@ -130,8 +130,8 @@ const CONSTRAINT_TYPES: ConstraintType[] = [
     description: 'Faculty or institutional time preferences',
     icon: <ScheduleIcon />,
     parameters: [
-      { name: 'preferred_times', label: 'Preferred Time Slots', type: 'multiselect', options: ['9:00-10:00', '10:00-11:00', '11:00-12:00', '14:00-15:00', '15:00-16:00'] },
-      { name: 'avoid_times', label: 'Times to Avoid', type: 'multiselect', options: ['9:00-10:00', '10:00-11:00', '11:00-12:00', '14:00-15:00', '15:00-16:00'] },
+      { name: 'preferred_times', label: 'Preferred Time Slots', type: 'multiselect', options: ['11:00-12:00', '12:00-13:00', '14:00-15:00', '15:00-16:00', '16:00-16:30'] },
+    { name: 'avoid_times', label: 'Times to Avoid', type: 'multiselect', options: ['11:00-12:00', '12:00-13:00', '14:00-15:00', '15:00-16:00', '16:00-16:30'] },
     ]
   },
   {
@@ -256,8 +256,8 @@ const Constraints: React.FC = () => {
           parameters: {
             faculty_id: 'FAC001',
             available_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-            start_time: '09:00',
-            end_time: '17:00'
+            start_time: '11:00',
+      end_time: '16:30'
           },
           priority: 8,
           is_active: true,

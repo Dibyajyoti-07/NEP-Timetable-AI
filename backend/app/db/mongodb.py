@@ -11,8 +11,8 @@ db = Database()
 async def connect_to_mongo():
     """Create database connection"""
     try:
-        print(f"🔗 Attempting MongoDB connection to: {settings.MONGODB_URL[:50]}...")
-        print(f"🔗 Database name: {settings.DATABASE_NAME}")
+        print(f"[INFO] Attempting MongoDB connection to: {settings.MONGODB_URL[:50]}...")
+        print(f"[INFO] Database name: {settings.DATABASE_NAME}")
         
         db.client = AsyncIOMotorClient(
             settings.MONGODB_URL,
@@ -23,11 +23,11 @@ async def connect_to_mongo():
         # Test connection with timeout
         await db.client.admin.command('ping')
         logging.info(f"Connected to MongoDB at {settings.MONGODB_URL[:50]}...")
-        print(f"✅ Successfully connected to MongoDB!")
+        print(f"[SUCCESS] Successfully connected to MongoDB!")
         
     except Exception as e:
         logging.warning(f"Could not connect to MongoDB: {e}")
-        print(f"❌ MongoDB connection failed: {e}")
+        print(f"[ERROR] MongoDB connection failed: {e}")
         logging.info("API will run without database connection for testing")
         # Don't raise exception - allow API to start without DB
 

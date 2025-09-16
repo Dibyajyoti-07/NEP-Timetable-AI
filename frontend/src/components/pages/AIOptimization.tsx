@@ -155,6 +155,7 @@ const AIOptimization: React.FC = () => {
     { id: '1', name: 'CSE Semester 1 - 2024', program: 'Computer Science' },
     { id: '2', name: 'B.Ed Semester 2 - 2024', program: 'Education' },
     { id: '3', name: 'FYUP Year 1 - 2024', program: 'Multidisciplinary' },
+    { id: '4', name: 'CSE AI&ML 5TH sem timetable', program: 'Computer Science - AI & ML' },
   ];
 
   // Focus areas for suggestions
@@ -739,8 +740,8 @@ const AIOptimization: React.FC = () => {
             <Card>
               <CardContent>
                 <Typography variant="h6" gutterBottom>AI Response</Typography>
-                <Paper sx={{ p: 2, backgroundColor: 'grey.50' }}>
-                  <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                <Paper sx={{ p: 2, backgroundColor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
+                  <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', color: 'text.primary' }}>
                     {queryResponse}
                   </Typography>
                 </Paper>
@@ -756,13 +757,13 @@ const AIOptimization: React.FC = () => {
                 <Stack spacing={2} sx={{ maxHeight: 400, overflow: 'auto' }}>
                   {queryHistory.slice(-5).reverse().map((item, index) => (
                     <Box key={index}>
-                      <Paper sx={{ p: 2, backgroundColor: 'primary.light', color: 'primary.contrastText' }}>
+                      <Paper sx={{ p: 2, backgroundColor: 'primary.main', color: 'primary.contrastText', border: '1px solid', borderColor: 'primary.dark' }}>
                         <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                           You: {item.query}
                         </Typography>
                       </Paper>
-                      <Paper sx={{ p: 2, mt: 1, backgroundColor: 'grey.100' }}>
-                        <Typography variant="body2">
+                      <Paper sx={{ p: 2, mt: 1, backgroundColor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
+                        <Typography variant="body2" sx={{ color: 'text.primary' }}>
                           AI: {item.response}
                         </Typography>
                       </Paper>

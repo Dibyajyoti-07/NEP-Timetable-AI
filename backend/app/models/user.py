@@ -12,7 +12,8 @@ class MongoBaseModel(BaseModel):
         "json_encoders": {
             ObjectId: str
         },
-        "populate_by_name": True
+        "populate_by_name": True,
+        "by_alias": True
     }
 
 # User schemas

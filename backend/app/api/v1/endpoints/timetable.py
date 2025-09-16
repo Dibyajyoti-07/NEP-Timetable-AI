@@ -1,16 +1,62 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 from app.models.user import User
 from app.models.timetable import Timetable, TimetableCreate, TimetableUpdate
 from app.services.auth import get_current_active_user
 from app.services.timetable.generator import TimetableGenerator
-from app.services.timetable.advanced_generator import AdvancedTimetableGenerator
+from app.services.timetable.advanced_generator import AdvancedTimetableGenerator, SchedulingRules
+from app.services.timetable.simple_generator import SimpleTimetableGenerator
+
 from app.services.timetable.exporter import TimetableExporter
 from app.db.mongodb import db
 from bson import ObjectId
 import io
 import datetime
+
+# Request models for advanced timetable generation
+class WorkingDaysRequest(BaseModel):
+    monday: bool = True
+    tuesday: bool = True
+    wednesday: bool = True
+    thursday: bool = True
+    friday: bool = True
+    saturday: bool = False
+    sunday: bool = False
+
+class TimeSlotsRequest(BaseModel):
+    start_time: str = "11:00"
+    end_time: str = "16:30"
+    slot_duration: int = 50
+    break_duration: int = 10
+    lunch_break: bool = True
+    lunch_start: str = "13:00"
+    lunch_end: str = "14:00"
+
+class ConstraintsRequest(BaseModel):
+    max_periods_per_day: int = 8
+    max_consecutive_hours: int = 3
+    min_break_between_subjects: int = 1
+    avoid_first_last_slot: bool = False
+    balance_workload: bool = True
+    prefer_morning_slots: bool = False
+
+class TimetableGenerationRequest(BaseModel):
+    program_id: str
+    semester: int
+    academic_year: str
+    constraints: Optional[dict] = None
+    preferences: Optional[dict] = None
+
+class AdvancedTimetableRequest(BaseModel):
+    program_id: str
+    semester: int
+    academic_year: str
+    title: Optional[str] = "Advanced AI Generated Timetable"
+    working_days: Optional[WorkingDaysRequest] = None
+    time_slots: Optional[TimeSlotsRequest] = None
+    constraints: Optional[ConstraintsRequest] = None
 
 router = APIRouter()
 
@@ -55,6 +101,10 @@ async def get_timetables(
             timetable["created_by"] = str(timetable["created_by"])
         if "program_id" in timetable and timetable["program_id"]:
             timetable["program_id"] = str(timetable["program_id"])
+        
+        # Convert academic_year to string if it's a number
+        if "academic_year" in timetable and isinstance(timetable["academic_year"], (int, float)):
+            timetable["academic_year"] = str(timetable["academic_year"])
         
         # Handle missing title field for old timetables
         if "title" not in timetable or not timetable["title"]:
@@ -199,9 +249,7 @@ async def save_draft_timetable(
 
 @router.post("/generate", response_model=Timetable)
 async def generate_timetable(
-    program_id: str,
-    semester: int,
-    academic_year: str,
+    request: TimetableGenerationRequest,
     current_user: User = Depends(get_current_active_user),
 ):
     """
@@ -209,20 +257,49 @@ async def generate_timetable(
     """
     try:
         # Check if program exists
-        program = await db.db.programs.find_one({"_id": ObjectId(program_id)})
+        program = await db.db.programs.find_one({"_id": ObjectId(request.program_id)})
         if not program:
             raise HTTPException(status_code=404, detail="Program not found")
         
-        # Create timetable generator
-        generator = TimetableGenerator()
+        # Create simple timetable generator
+        generator = SimpleTimetableGenerator()
         
         # Generate timetable
-        timetable = await generator.generate_timetable(
-            program_id=program_id,
-            semester=semester,
-            academic_year=academic_year,
+        result = await generator.generate_timetable(
+            program_id=request.program_id,
+            semester=request.semester,
+            academic_year=request.academic_year,
             created_by=str(current_user.id)
         )
+        
+        if not result["success"]:
+            raise HTTPException(status_code=400, detail=result["error"])
+        
+        # Get the generated timetable from database
+        timetable = await db.db.timetables.find_one({"_id": ObjectId(result["timetable_id"])})
+        if not timetable:
+            raise HTTPException(status_code=500, detail="Generated timetable not found")
+        
+        # Convert ObjectIds to strings for JSON serialization
+        timetable["id"] = str(timetable["_id"])
+        del timetable["_id"]
+        
+        if "created_by" in timetable and timetable["created_by"]:
+            timetable["created_by"] = str(timetable["created_by"])
+        if "program_id" in timetable and timetable["program_id"]:
+            timetable["program_id"] = str(timetable["program_id"])
+        
+        # Convert ObjectIds in entries
+        if "entries" in timetable and timetable["entries"]:
+            for entry in timetable["entries"]:
+                if "course_id" in entry and isinstance(entry["course_id"], ObjectId):
+                    entry["course_id"] = str(entry["course_id"])
+                if "faculty_id" in entry and isinstance(entry["faculty_id"], ObjectId):
+                    entry["faculty_id"] = str(entry["faculty_id"])
+                if "room_id" in entry and isinstance(entry["room_id"], ObjectId):
+                    entry["room_id"] = str(entry["room_id"])
+                if "group_id" in entry and isinstance(entry["group_id"], ObjectId):
+                    entry["group_id"] = str(entry["group_id"])
         
         return timetable
         
@@ -231,19 +308,36 @@ async def generate_timetable(
 
 @router.post("/generate-advanced")
 async def generate_advanced_timetable(
-    request: dict,
+    request: AdvancedTimetableRequest,
     current_user: User = Depends(get_current_active_user),
 ):
     """
     Generate a new timetable using advanced constraint-based algorithm with hard and soft rules.
-    Specifically designed for CSE AI & ML program with detailed scheduling requirements.
+    Uses academic setup data (working days, time slots, constraints) from the request.
     """
     try:
         # Extract parameters from request
-        program_id = request.get("program_id")
-        semester = request.get("semester")
-        academic_year = request.get("academic_year")
-        title = request.get("title", "Advanced AI Generated Timetable")
+        program_id = request.program_id
+        semester = request.semester
+        academic_year = request.academic_year
+        title = request.title or "Advanced AI Generated Timetable"
+        
+        # Extract academic setup data from request models
+        working_days_model = request.working_days or WorkingDaysRequest()
+        time_slots_model = request.time_slots or TimeSlotsRequest()
+        constraints_model = request.constraints or ConstraintsRequest()
+        
+        # Convert to dictionaries for compatibility
+        working_days = working_days_model.dict()
+        time_slots = time_slots_model.dict()
+        constraints = constraints_model.dict()
+        
+        # Create academic_setup object for compatibility
+        academic_setup = {
+            "working_days": working_days,
+            "time_slots": time_slots,
+            "constraints": constraints
+        }
         
         if not all([program_id, semester, academic_year]):
             raise HTTPException(
@@ -256,85 +350,111 @@ async def generate_advanced_timetable(
         if not program:
             raise HTTPException(status_code=404, detail="Program not found")
         
-        print(f"🚀 Starting advanced timetable generation for program {program_id}")
+        print(f"[INFO] Starting advanced timetable generation for program {program_id}")
+        print(f"[INFO] Working days: {[day for day, enabled in working_days.items() if enabled]}")
+        print(f"[INFO] Time slots: {time_slots['start_time']} - {time_slots['end_time']}")
         
-        # Create advanced timetable generator
-        generator = AdvancedTimetableGenerator()
+        # Create advanced timetable generator with academic setup
+        rules = await SchedulingRules.from_database_with_setup(program_id, academic_setup)
+        generator = AdvancedTimetableGenerator(rules)
         
-        # Generate timetable using the advanced algorithm
-        result = generator.generate_timetable()
+        # Load data from database with academic setup constraints
+        await generator.load_from_database_with_setup(program_id, semester, academic_setup)
+        
+        # Generate timetable using the advanced constraint-based approach
+        result = generator.generate_timetable(program_id, semester)
         
         if not result["success"]:
-            raise HTTPException(status_code=400, detail=result["error"])
+            raise HTTPException(status_code=400, detail=result.get("error", "Failed to generate timetable"))
         
-        print(f"✅ Advanced generation successful with score: {result['score']}")
-        
-        # Convert the generated schedule to timetable entries
-        entries = []
-        for session in result["schedule"]:
-            entries.append({
-                "course_id": session["course_code"],  # Using course_code as ID for now
-                "faculty_id": "default_faculty",     # Will be mapped properly later
-                "room_id": session["room"],
-                "time_slot": {
-                    "day": session["day"],
-                    "start_time": session["start_time"],
-                    "end_time": session["end_time"],
-                    "duration_minutes": session["duration_minutes"]
-                },
-                "group_id": session["group"]
-            })
-        
-        # Create timetable document
+        # Save the generated timetable to database
+        now = datetime.datetime.utcnow()
         timetable_doc = {
             "title": title,
             "program_id": ObjectId(program_id),
             "semester": semester,
             "academic_year": academic_year,
-            "entries": entries,
+            "entries": result["schedule"],
             "is_draft": False,
-            "created_by": ObjectId(str(current_user.id)),
-            "created_at": datetime.datetime.utcnow(),
-            "generated_at": datetime.datetime.utcnow(),
-            "validation_status": "valid" if result["validation"]["valid"] else "invalid",
-            "optimization_score": result["score"],
             "metadata": {
-                "generation_method": "advanced_constraint_based",
-                "algorithm_version": "v2.0",
-                "statistics": result["statistics"],
-                "validation_report": result["validation"],
-                "schedule_details": result["schedule"]
-            }
+                "generator_type": "advanced_constraint_based",
+                "academic_setup": academic_setup,
+                "working_days": working_days,
+                "time_slots": time_slots,
+                "constraints": constraints,
+                "optimization_score": result.get("score", 0),
+                "validation": result.get("validation", {}),
+                "statistics": result.get("statistics", {})
+            },
+            "created_by": ObjectId(current_user.id),
+            "created_at": now,
+            "updated_at": now,
+            "generated_at": now,
+            "validation_status": "valid" if result.get("validation", {}).get("valid", False) else "warnings",
+            "optimization_score": result.get("score", 0)
         }
         
         # Save to database
-        result_db = await db.db.timetables.insert_one(timetable_doc)
-        saved_timetable = await db.db.timetables.find_one({"_id": result_db.inserted_id})
-        
-        # Convert ObjectIds to strings for JSON serialization
-        if saved_timetable:
-            saved_timetable["id"] = str(saved_timetable["_id"])
-            del saved_timetable["_id"]
-            
-            if "created_by" in saved_timetable and saved_timetable["created_by"]:
-                saved_timetable["created_by"] = str(saved_timetable["created_by"])
-            if "program_id" in saved_timetable and saved_timetable["program_id"]:
-                saved_timetable["program_id"] = str(saved_timetable["program_id"])
+        db_result = await db.db.timetables.insert_one(timetable_doc)
+        timetable_id = str(db_result.inserted_id)
         
         return {
             "success": True,
-            "message": "Advanced timetable generated successfully",
-            "timetable": saved_timetable,
-            "generation_details": {
-                "score": result["score"],
-                "statistics": result["statistics"],
-                "validation": result["validation"]
+            "message": f"Advanced timetable generated successfully with score {result.get('score', 0)}",
+            "timetable_id": timetable_id,
+            "timetable": {
+                "id": timetable_id,
+                "title": title,
+                "entries": result["schedule"],
+                "validation": result.get("validation", {}),
+                "statistics": result.get("statistics", {}),
+                "score": result.get("score", 0)
             }
         }
         
     except Exception as e:
-        print(f"❌ Error in advanced timetable generation: {str(e)}")
+        print(f"[ERROR] Error in advanced timetable generation: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error generating advanced timetable: {str(e)}")
+
+@router.post("/generate-constraint-based")
+async def generate_constraint_based_timetable(
+    request: dict,
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Generate a new timetable using constraint-based algorithm with database-loaded time & rules.
+    This respects the time slots and rules configured in the Time & Rules tab.
+    """
+    try:
+        # Extract parameters from request
+        program_id = request.get("program_id")
+        semester = request.get("semester")
+        academic_year = request.get("academic_year")
+        title = request.get("title", "Constraint-Based Generated Timetable")
+        
+        if not all([program_id, semester, academic_year]):
+            raise HTTPException(
+                status_code=400, 
+                detail="Missing required fields: program_id, semester, academic_year"
+            )
+        
+        # Check if program exists
+        program = await db.db.programs.find_one({"_id": ObjectId(program_id)})
+        if not program:
+            raise HTTPException(status_code=404, detail="Program not found")
+        
+        print(f"🚀 Starting constraint-based timetable generation for program {program_id}")
+        
+        # TODO: Implement constraint-based timetable generation
+        # This endpoint is not yet implemented
+        raise HTTPException(
+            status_code=501, 
+            detail="Constraint-based timetable generation is not yet implemented"
+        )
+        
+    except Exception as e:
+        print(f"[ERROR] Error in constraint-based timetable generation: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error generating constraint-based timetable: {str(e)}")
 
 @router.put("/{timetable_id}", response_model=Timetable)
 async def update_timetable(

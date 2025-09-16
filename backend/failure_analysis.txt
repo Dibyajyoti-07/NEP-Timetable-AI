@@ -1,0 +1,15 @@
+Failed to schedule PCCCS502 session 6 (50min)
+Available slots before filtering: 16
+Available slots after soft constraints: 16
+
+First 10 slots checked:
+  1. Mon 13:20-14:10: Daily=True, Faculty=True, Room=True, Available=False
+  2. Mon 14:20-15:10: Daily=True, Faculty=True, Room=True, Available=False
+  3. Mon 15:20-16:10: Daily=True, Faculty=True, Room=True, Available=False
+  4. Mon 11:00-11:50: Daily=True, Faculty=True, Room=True, Available=False
+  5. Tue 11:00-11:50: Daily=True, Faculty=True, Room=True, Available=False
+  6. Tue 13:20-14:10: Daily=True, Faculty=True, Room=True, Available=True
+  7. Tue 14:20-15:10: Daily=True, Faculty=True, Room=True, Available=True
+  8. Tue 15:20-16:10: Daily=True, Faculty=True, Room=True, Available=True
+  9. Wed 11:00-11:50: Daily=True, Faculty=True, Room=True, Available=True
+  10. Wed 13:20-14:10: Daily=True, Faculty=True, Room=True, Available=True

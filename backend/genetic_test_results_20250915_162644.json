@@ -1,0 +1,524 @@
+{
+  "success": true,
+  "data_collected": {
+    "total_courses": 9,
+    "total_faculty": 8,
+    "total_student_groups": 1,
+    "total_rooms": 6,
+    "total_time_slots": 6,
+    "working_days": 5
+  },
+  "time_slots_generated": 42,
+  "generations_completed": 10,
+  "best_fitness_score": 493.0816326530612,
+  "fitness_history": [
+    606.0816326530612,
+    606.0816326530612,
+    658.2244897959183,
+    658.2244897959183,
+    758.6530612244898,
+    758.6530612244898,
+    854.2244897959183,
+    643.3673469387755,
+    643.3673469387755,
+    493.0816326530612
+  ],
+  "timetable_entries": [
+    {
+      "course_id": "68c2be36eb15e58ecd067868",
+      "faculty_id": "68c7eb86b8454a01e5a6323f",
+      "room_id": "68c7eb86b8454a01e5a63243",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "sunday",
+        "start_time": "16:00",
+        "end_time": "17:00",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2be36eb15e58ecd067868",
+      "faculty_id": "68c2c4a9eb15e58ecd067875",
+      "room_id": "68c328228cc8a4e5327ede41",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "tuesday",
+        "start_time": "09:00",
+        "end_time": "10:00",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2be36eb15e58ecd067868",
+      "faculty_id": "68c2c3e5eb15e58ecd067872",
+      "room_id": "68c327d88cc8a4e5327ede40",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "friday",
+        "start_time": "16:00",
+        "end_time": "17:00",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2be36eb15e58ecd067868",
+      "faculty_id": "68c2c3e5eb15e58ecd067872",
+      "room_id": "68c327d88cc8a4e5327ede40",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "tuesday",
+        "start_time": "09:00",
+        "end_time": "10:00",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c16eeb15e58ecd067869",
+      "faculty_id": "68c2c44aeb15e58ecd067874",
+      "room_id": "68c327d88cc8a4e5327ede40",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "monday",
+        "start_time": "09:00",
+        "end_time": "10:00",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c16eeb15e58ecd067869",
+      "faculty_id": "68c7eb86b8454a01e5a6323f",
+      "room_id": "68c327b78cc8a4e5327ede3f",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "saturday",
+        "start_time": "16:00",
+        "end_time": "17:00",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c16eeb15e58ecd067869",
+      "faculty_id": "68c2c44aeb15e58ecd067874",
+      "room_id": "68c7eb86b8454a01e5a63243",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "thursday",
+        "start_time": "11:20",
+        "end_time": "12:20",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c16eeb15e58ecd067869",
+      "faculty_id": "68c2c394eb15e58ecd067871",
+      "room_id": "68c327b78cc8a4e5327ede3f",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "monday",
+        "start_time": "14:50",
+        "end_time": "15:50",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c16eeb15e58ecd067869",
+      "faculty_id": "68c2c44aeb15e58ecd067874",
+      "room_id": "68c7eb86b8454a01e5a63244",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "thursday",
+        "start_time": "11:20",
+        "end_time": "12:20",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c16eeb15e58ecd067869",
+      "faculty_id": "68c2c518eb15e58ecd067876",
+      "room_id": "68c7eb86b8454a01e5a63244",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "sunday",
+        "start_time": "14:50",
+        "end_time": "15:50",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c1b2eb15e58ecd06786a",
+      "faculty_id": "68c2c3e5eb15e58ecd067872",
+      "room_id": "68c7eb86b8454a01e5a63242",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "saturday",
+        "start_time": "14:50",
+        "end_time": "15:50",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c1b2eb15e58ecd06786a",
+      "faculty_id": "68c2c413eb15e58ecd067873",
+      "room_id": "68c7eb86b8454a01e5a63242",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "saturday",
+        "start_time": "09:00",
+        "end_time": "10:00",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c1b2eb15e58ecd06786a",
+      "faculty_id": "68c2c394eb15e58ecd067871",
+      "room_id": "68c327b78cc8a4e5327ede3f",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "sunday",
+        "start_time": "09:00",
+        "end_time": "10:00",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c1b2eb15e58ecd06786a",
+      "faculty_id": "68c2c394eb15e58ecd067871",
+      "room_id": "68c7eb86b8454a01e5a63242",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "friday",
+        "start_time": "16:00",
+        "end_time": "17:00",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c1b2eb15e58ecd06786a",
+      "faculty_id": "68c7eb86b8454a01e5a6323f",
+      "room_id": "68c328228cc8a4e5327ede41",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "thursday",
+        "start_time": "11:20",
+        "end_time": "12:20",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c1b2eb15e58ecd06786a",
+      "faculty_id": "68c2c44aeb15e58ecd067874",
+      "room_id": "68c327b78cc8a4e5327ede3f",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "wednesday",
+        "start_time": "16:00",
+        "end_time": "17:00",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c1f1eb15e58ecd06786b",
+      "faculty_id": "68c2c394eb15e58ecd067871",
+      "room_id": "68c7eb86b8454a01e5a63244",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "thursday",
+        "start_time": "10:10",
+        "end_time": "11:10",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c1f1eb15e58ecd06786b",
+      "faculty_id": "68c2c4a9eb15e58ecd067875",
+      "room_id": "68c7eb86b8454a01e5a63242",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "saturday",
+        "start_time": "13:40",
+        "end_time": "14:40",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c1f1eb15e58ecd06786b",
+      "faculty_id": "68c2c44aeb15e58ecd067874",
+      "room_id": "68c327b78cc8a4e5327ede3f",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "sunday",
+        "start_time": "13:40",
+        "end_time": "14:40",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c1f1eb15e58ecd06786b",
+      "faculty_id": "68c2c518eb15e58ecd067876",
+      "room_id": "68c7eb86b8454a01e5a63242",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "friday",
+        "start_time": "13:40",
+        "end_time": "14:40",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c1f1eb15e58ecd06786b",
+      "faculty_id": "68c2c394eb15e58ecd067871",
+      "room_id": "68c7eb86b8454a01e5a63244",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "tuesday",
+        "start_time": "09:00",
+        "end_time": "10:00",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c1f1eb15e58ecd06786b",
+      "faculty_id": "68c7eb85b8454a01e5a6323e",
+      "room_id": "68c327b78cc8a4e5327ede3f",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "tuesday",
+        "start_time": "16:00",
+        "end_time": "17:00",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c226eb15e58ecd06786c",
+      "faculty_id": "68c2c518eb15e58ecd067876",
+      "room_id": "68c328228cc8a4e5327ede41",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "monday",
+        "start_time": "16:00",
+        "end_time": "17:00",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c226eb15e58ecd06786c",
+      "faculty_id": "68c2c3e5eb15e58ecd067872",
+      "room_id": "68c327b78cc8a4e5327ede3f",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "monday",
+        "start_time": "10:10",
+        "end_time": "11:10",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c226eb15e58ecd06786c",
+      "faculty_id": "68c2c44aeb15e58ecd067874",
+      "room_id": "68c328228cc8a4e5327ede41",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "tuesday",
+        "start_time": "09:00",
+        "end_time": "10:00",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c288eb15e58ecd06786d",
+      "faculty_id": "68c2c518eb15e58ecd067876",
+      "room_id": "68c7eb86b8454a01e5a63243",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "saturday",
+        "start_time": "13:40",
+        "end_time": "14:40",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c288eb15e58ecd06786d",
+      "faculty_id": "68c2c518eb15e58ecd067876",
+      "room_id": "68c328228cc8a4e5327ede41",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "wednesday",
+        "start_time": "11:20",
+        "end_time": "12:20",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c288eb15e58ecd06786d",
+      "faculty_id": "68c2c413eb15e58ecd067873",
+      "room_id": "68c7eb86b8454a01e5a63243",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "tuesday",
+        "start_time": "13:40",
+        "end_time": "14:40",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c2c2eb15e58ecd06786e",
+      "faculty_id": "68c2c413eb15e58ecd067873",
+      "room_id": "68c327d88cc8a4e5327ede40",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "wednesday",
+        "start_time": "09:00",
+        "end_time": "10:00",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c2c2eb15e58ecd06786e",
+      "faculty_id": "68c7eb85b8454a01e5a6323e",
+      "room_id": "68c327d88cc8a4e5327ede40",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "tuesday",
+        "start_time": "16:00",
+        "end_time": "17:00",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c2c2eb15e58ecd06786e",
+      "faculty_id": "68c7eb85b8454a01e5a6323e",
+      "room_id": "68c327d88cc8a4e5327ede40",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "tuesday",
+        "start_time": "14:50",
+        "end_time": "15:50",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c2eceb15e58ecd06786f",
+      "faculty_id": "68c2c394eb15e58ecd067871",
+      "room_id": "68c7eb86b8454a01e5a63244",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "wednesday",
+        "start_time": "10:10",
+        "end_time": "11:10",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c2eceb15e58ecd06786f",
+      "faculty_id": "68c2c394eb15e58ecd067871",
+      "room_id": "68c327b78cc8a4e5327ede3f",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "friday",
+        "start_time": "13:40",
+        "end_time": "14:40",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c2eceb15e58ecd06786f",
+      "faculty_id": "68c7eb86b8454a01e5a6323f",
+      "room_id": "68c327d88cc8a4e5327ede40",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "thursday",
+        "start_time": "11:20",
+        "end_time": "12:20",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c316eb15e58ecd067870",
+      "faculty_id": "68c7eb85b8454a01e5a6323e",
+      "room_id": "68c327b78cc8a4e5327ede3f",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "friday",
+        "start_time": "10:10",
+        "end_time": "11:10",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c316eb15e58ecd067870",
+      "faculty_id": "68c7eb86b8454a01e5a6323f",
+      "room_id": "68c7eb86b8454a01e5a63242",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "thursday",
+        "start_time": "13:40",
+        "end_time": "14:40",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    },
+    {
+      "course_id": "68c2c316eb15e58ecd067870",
+      "faculty_id": "68c2c413eb15e58ecd067873",
+      "room_id": "68c7eb86b8454a01e5a63242",
+      "group_id": "68c6c776d15c34dbd926e45e",
+      "time_slot": {
+        "day": "saturday",
+        "start_time": "09:00",
+        "end_time": "10:00",
+        "duration_minutes": 60
+      },
+      "session_type": "theory"
+    }
+  ],
+  "conflicts": [
+    "Room conflict in tuesday_09:00",
+    "Student group conflict in tuesday_09:00",
+    "Student group conflict in friday_16:00",
+    "Faculty conflict in thursday_11:20",
+    "Student group conflict in thursday_11:20",
+    "Faculty conflict in saturday_09:00",
+    "Room conflict in saturday_09:00",
+    "Student group conflict in saturday_09:00",
+    "Student group conflict in saturday_13:40",
+    "Student group conflict in friday_13:40",
+    "Faculty conflict in tuesday_16:00",
+    "Student group conflict in tuesday_16:00"
+  ],
+  "total_classes_scheduled": 37
+}

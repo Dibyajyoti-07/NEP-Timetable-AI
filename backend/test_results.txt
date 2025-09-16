@@ -1,0 +1,15 @@
+Courses: 9
+Groups: 3
+Rooms: 3
+Faculty: 6
+
+Course details:
+  PCCAIML501: Probability and Statistics - 4h/week
+  PCCCS502: Operating System - 6h/week
+  PCCCS503: Object Oriented Programming - 6h/week
+  PCCAIML502: Introduction to Machine Learning - 6h/week
+  PECAIML501A: Cloud Computing - 3h/week
+  HSMC501: Introduction to Industrial Management - 3h/week
+  PCCCS592: Operating System Lab - 3h/week
+  PCCCS593: Object Oriented Programming and Java Lab - 3h/week
+  PCCAIML592: Machine Learning Lab - 3h/week

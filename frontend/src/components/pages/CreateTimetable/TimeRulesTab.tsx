@@ -28,9 +28,11 @@ import {
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Rule as RuleIcon } from '@mui/icons-material';
 import timetableService from '../../../services/timetableService';
 import type { Rule } from '../../../services/timetableService';
+import { useTimetableContext } from '../../../contexts/TimetableContext';
 
 const TimeRulesTab: React.FC = () => {
   const theme = useTheme();
+  const { formData, updateFormData } = useTimetableContext();
   const [rules, setRules] = useState<Rule[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,13 +41,13 @@ const TimeRulesTab: React.FC = () => {
   const [newRuleName, setNewRuleName] = useState('');
   const [newRuleDesc, setNewRuleDesc] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
-  // Time & rules specific states
-  const [lunchTime, setLunchTime] = useState('12:30'); // HH:MM 24h
-  const [collegeStartTime, setCollegeStartTime] = useState('08:00');
-  const [collegeEndTime, setCollegeEndTime] = useState('18:00');
-  const [intervalBetweenClasses, setIntervalBetweenClasses] = useState<number>(10);
-  const [maxContinuousHours, setMaxContinuousHours] = useState<number>(3);
-  const [maxClassesPerDay, setMaxClassesPerDay] = useState<number>(6);
+  // Time & rules specific states - initialize from context
+  const [lunchTime, setLunchTime] = useState(formData.time_slots.lunch_start || '12:30');
+  const [collegeStartTime, setCollegeStartTime] = useState(formData.time_slots.start_time || '11:00');
+  const [collegeEndTime, setCollegeEndTime] = useState(formData.time_slots.end_time || '16:30');
+  const [intervalBetweenClasses, setIntervalBetweenClasses] = useState<number>(formData.time_slots.break_duration || 10);
+  const [maxContinuousHours, setMaxContinuousHours] = useState<number>(formData.constraints.max_consecutive_hours || 3);
+  const [maxClassesPerDay, setMaxClassesPerDay] = useState<number>(formData.constraints.max_periods_per_day || 6);
   const [maxLabClassesPerDay, setMaxLabClassesPerDay] = useState<number>(2);
   const [maxRepeatPerDay, setMaxRepeatPerDay] = useState<number>(1);
 
@@ -62,6 +64,16 @@ const TimeRulesTab: React.FC = () => {
   };
 
   useEffect(() => { load(); }, []);
+
+  // Sync local state with context data
+  useEffect(() => {
+    setLunchTime(formData.time_slots.lunch_start || '12:30');
+    setCollegeStartTime(formData.time_slots.start_time || '11:00');
+    setCollegeEndTime(formData.time_slots.end_time || '16:30');
+    setIntervalBetweenClasses(formData.time_slots.break_duration || 10);
+    setMaxContinuousHours(formData.constraints.max_consecutive_hours || 3);
+    setMaxClassesPerDay(formData.constraints.max_periods_per_day || 6);
+  }, [formData.time_slots, formData.constraints]);
 
   // (save handled inline in the Save Settings button)
 
@@ -136,7 +148,13 @@ const TimeRulesTab: React.FC = () => {
         <Box sx={{ position: 'absolute', bottom: -30, left: -30, width: 150, height: 150, borderRadius: '50%', background: alpha('#ffffff', 0.05), zIndex: 0 }} />
       </Paper>
 
-      <Card elevation={3} sx={{ mb: 4, borderRadius: 3 }}>
+      <Card elevation={3} sx={{ 
+        mb: 4, 
+        borderRadius: 3,
+        background: 'linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(18,18,18,0.95) 100%)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+        border: '1px solid #333'
+      }}>
         <Box sx={{ background: `linear-gradient(90deg, ${alpha(theme.palette.success.main,0.1)}, ${alpha(theme.palette.info.main,0.1)})`, p:2, borderBottom: `1px solid ${theme.palette.divider}` }}>
           <Stack direction="row" spacing={2} alignItems="center">
             <Avatar sx={{ bgcolor: 'success.main' }}><AddIcon /></Avatar>
@@ -214,6 +232,22 @@ const TimeRulesTab: React.FC = () => {
                     };
                     setLoading(true);
                     try {
+                      // Update TimetableContext with new time settings
+                      updateFormData('time_slots', {
+                        ...formData.time_slots,
+                        start_time: collegeStartTime,
+                        end_time: collegeEndTime,
+                        break_duration: intervalBetweenClasses,
+                        lunch_start: lunchTime,
+                        lunch_end: formData.time_slots.lunch_end // Keep existing lunch end time
+                      });
+                      
+                      updateFormData('constraints', {
+                        ...formData.constraints,
+                        max_consecutive_hours: maxContinuousHours,
+                        max_periods_per_day: maxClassesPerDay
+                      });
+                      
                       if (editingId) {
                         const updated = await timetableService.updateRule(editingId, { name: newRuleName, description: newRuleDesc, rule_type: 'time_settings', params, is_active: true });
                         setRules(prev=> prev.map(r=> r.id===editingId? updated: r));
@@ -246,7 +280,13 @@ const TimeRulesTab: React.FC = () => {
         </CardContent>
       </Card>
 
-      <Card elevation={3} sx={{ borderRadius:3, overflow:'hidden' }}>
+      <Card elevation={3} sx={{ 
+        borderRadius: 3, 
+        overflow: 'hidden',
+        background: 'linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(18,18,18,0.95) 100%)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+        border: '1px solid #333'
+      }}>
         <Box sx={{ background: `linear-gradient(90deg, ${alpha(theme.palette.info.main,0.1)}, ${alpha(theme.palette.primary.main,0.1)})`, p:2, borderBottom:`1px solid ${theme.palette.divider}` }}>
           <Typography variant="h6" sx={{ fontWeight:600 }}>Defined Rules ({rules.length})</Typography>
         </Box>

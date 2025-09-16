@@ -17,6 +17,9 @@ class CourseBase(BaseModel):
     is_lab: Optional[bool] = Field(default=False, description="Whether this is a lab course")
     lab_hours: Optional[int] = Field(default=0, description="Lab hours per week")
     is_active: Optional[bool] = Field(default=True, description="Whether the course is active")
+    faculty_id: Optional[str] = Field(None, description="Faculty ID assigned to this course")
+    practical_hours: Optional[int] = Field(default=0, description="Practical hours per week")
+    theory_hours: Optional[int] = Field(default=0, description="Theory hours per week")
 
 class CourseCreate(CourseBase):
     pass
@@ -35,6 +38,9 @@ class CourseUpdate(BaseModel):
     is_lab: Optional[bool] = None
     lab_hours: Optional[int] = None
     is_active: Optional[bool] = None
+    faculty_id: Optional[str] = None
+    practical_hours: Optional[int] = None
+    theory_hours: Optional[int] = None
 
 class Course(CourseBase, MongoBaseModel):
     created_by: Optional[str] = Field(None, description="User who created this course")

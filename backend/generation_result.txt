@@ -1,0 +1,2 @@
+Success: False
+Error: Failed to generate a valid timetable after all attempts. Please check constraints.

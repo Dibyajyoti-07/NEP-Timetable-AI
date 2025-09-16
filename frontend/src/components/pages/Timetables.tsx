@@ -90,7 +90,8 @@ const Timetables: React.FC = () => {
         // Check authentication first
         if (!isAuthenticated) {
           console.log('User not authenticated - redirecting to login');
-          navigate('/login');
+          setError('Please log in to view timetables. Redirecting to login page...');
+          setTimeout(() => navigate('/login'), 2000);
           return;
         }
 
@@ -126,10 +127,24 @@ const Timetables: React.FC = () => {
           console.log('🔍 First timetable structure:', timetablesData[0]);
           setTimetables(timetablesData);
           
-        } catch (backendError) {
-          console.warn('Backend not available, using mock data:', backendError);
+        } catch (backendError: any) {
+          console.warn('Backend error:', backendError);
           
-          // Fallback to mock data if backend is not available
+          // Check if it's an authentication error
+          if (backendError.response?.status === 401) {
+            setError('Authentication failed. Please log in again.');
+            setTimeout(() => navigate('/login'), 2000);
+            return;
+          }
+          
+          // For other errors, show appropriate message
+          if (backendError.response?.status === 500) {
+            setError('Server error. Please try again later.');
+          } else {
+            setError('Unable to load timetables. Please check your connection and try again.');
+          }
+          
+          // Fallback to empty array
           const mockTimetables: Timetable[] = [];
           setTimetables(mockTimetables);
         }
@@ -252,29 +267,87 @@ const Timetables: React.FC = () => {
               No timetables found
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Create your first timetable to get started
+              {!isAuthenticated 
+                ? 'Please log in to view and create timetables'
+                : 'Create your first timetable to get started'
+              }
             </Typography>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => navigate('/timetables/create')}
-            >
-              Create New Timetable
-            </Button>
+            {isAuthenticated ? (
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => navigate('/timetables/new')}
+              >
+                Create New Timetable
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                onClick={() => navigate('/login')}
+              >
+                Log In
+              </Button>
+            )}
           </Paper>
         ) : (
           timetables.map((timetable) => (
-            <Card key={timetable.id} sx={{ p: 2, border: '1px solid', borderColor: 'divider' }}>
+            <Card 
+              key={timetable.id} 
+              sx={{ 
+                p: 3, 
+                border: '1px solid', 
+                borderColor: 'divider',
+                borderRadius: 3,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                transition: 'all 0.3s ease-in-out',
+                background: 'linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(18,18,18,0.95) 100%)',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 8px 25px rgba(33,150,243,0.25)',
+                  borderColor: 'primary.main',
+                }
+              }}
+            >
               <CardContent sx={{ pb: 1 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
                   <Box sx={{ flex: 1 }}>
-                    <Typography variant="h6" sx={{ mb: 1 }}>
+                    <Typography 
+                      variant="h5" 
+                      sx={{ 
+                        mb: 0.5, 
+                        fontWeight: 700,
+                        background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
+                        backgroundClip: 'text',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        letterSpacing: '-0.5px'
+                      }}
+                    >
                       {timetable.title}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                    <Typography 
+                      variant="body1" 
+                      sx={{ 
+                        mb: 0.5, 
+                        color: 'text.primary',
+                        fontWeight: 500,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1
+                      }}
+                    >
+                      <CalendarIcon sx={{ fontSize: 18, color: 'primary.main' }} />
                       {timetable.academic_year} - Semester {timetable.semester}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                    <Typography 
+                      variant="body2" 
+                      color="text.secondary" 
+                      sx={{ 
+                        display: 'block',
+                        fontStyle: 'italic',
+                        opacity: 0.8
+                      }}
+                    >
                       Created: {formatDate(timetable.created_at)}
                     </Typography>
                   </Box>
@@ -286,56 +359,116 @@ const Timetables: React.FC = () => {
                       label={timetable.is_draft ? 'Draft' : 'Complete'}
                       color={timetable.is_draft ? 'warning' : 'success'}
                       variant={timetable.is_draft ? 'outlined' : 'filled'}
+                      sx={{
+                        fontWeight: 600,
+                        fontSize: '0.75rem',
+                        borderRadius: 2,
+                        boxShadow: timetable.is_draft ? 'none' : '0 2px 8px rgba(76, 175, 80, 0.3)'
+                      }}
                     />
                   </Box>
                 </Box>
 
-                {/* Additional details */}
-                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 1 }}>
-                  {timetable.validation_status && (
-                    <Typography variant="caption" color="text.secondary">
-                      Status: {timetable.validation_status}
-                    </Typography>
-                  )}
-                  {timetable.optimization_score && (
-                    <Typography variant="caption" color="text.secondary">
-                      Score: {timetable.optimization_score.toFixed(1)}
-                    </Typography>
-                  )}
+                {/* Status and Actions Row */}
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  p: 1.5,
+                  backgroundColor: 'rgba(33, 150, 243, 0.08)',
+                  borderRadius: 2,
+                  border: '1px solid rgba(33, 150, 243, 0.2)'
+                }}>
+                  <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                    {timetable.validation_status && (
+                      <Typography 
+                        variant="body2" 
+                        sx={{
+                          color: 'primary.main',
+                          fontWeight: 600,
+                          fontSize: '0.75rem'
+                        }}
+                      >
+                        Status: {timetable.validation_status}
+                      </Typography>
+                    )}
+                    {timetable.optimization_score && (
+                      <Typography 
+                        variant="body2" 
+                        sx={{
+                          color: 'success.main',
+                          fontWeight: 600,
+                          fontSize: '0.75rem'
+                        }}
+                      >
+                        Score: {timetable.optimization_score.toFixed(1)}
+                      </Typography>
+                    )}
+                  </Box>
+                  
+                  <Box sx={{ display: 'flex', gap: 0.5 }}>
+                    <Tooltip title="View Details">
+                      <IconButton 
+                        size="medium" 
+                        onClick={() => handleView(timetable)}
+                        sx={{
+                          backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                          color: 'info.main',
+                          borderRadius: 2,
+                          transition: 'all 0.2s ease-in-out',
+                          '&:hover': {
+                            backgroundColor: 'info.main',
+                            color: 'white',
+                            transform: 'scale(1.05)'
+                          }
+                        }}
+                      >
+                        <ViewIcon />
+                      </IconButton>
+                    </Tooltip>
+                    
+                    <Tooltip title="Edit Timetable">
+                      <IconButton 
+                        size="medium" 
+                        onClick={() => handleEdit(timetable)}
+                        sx={{
+                          backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                          color: 'primary.main',
+                          borderRadius: 2,
+                          transition: 'all 0.2s ease-in-out',
+                          '&:hover': {
+                            backgroundColor: 'primary.main',
+                            color: 'white',
+                            transform: 'scale(1.05)'
+                          }
+                        }}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+                    
+                    <Tooltip title="Delete Timetable">
+                      <IconButton 
+                        size="medium" 
+                        onClick={() => handleDeleteClick(timetable)}
+                        sx={{
+                          backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                          color: 'error.main',
+                          borderRadius: 2,
+                          transition: 'all 0.2s ease-in-out',
+                          '&:hover': {
+                            backgroundColor: 'error.main',
+                            color: 'white',
+                            transform: 'scale(1.05)'
+                          }
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
                 </Box>
               </CardContent>
-
-              <CardActions sx={{ justifyContent: 'flex-end', pt: 0 }}>
-                <Tooltip title="View Details">
-                  <IconButton 
-                    size="small" 
-                    onClick={() => handleView(timetable)}
-                    color="info"
-                  >
-                    <ViewIcon />
-                  </IconButton>
-                </Tooltip>
-                
-                <Tooltip title="Edit Timetable">
-                  <IconButton 
-                    size="small" 
-                    onClick={() => handleEdit(timetable)}
-                    color="primary"
-                  >
-                    <EditIcon />
-                  </IconButton>
-                </Tooltip>
-                
-                <Tooltip title="Delete Timetable">
-                  <IconButton 
-                    size="small" 
-                    onClick={() => handleDeleteClick(timetable)}
-                    color="error"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Tooltip>
-              </CardActions>
             </Card>
           ))
         )}

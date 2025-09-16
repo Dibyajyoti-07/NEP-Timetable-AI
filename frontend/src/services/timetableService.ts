@@ -82,6 +82,7 @@ export interface Program {
 
 export interface Course {
   id?: string;
+  _id?: string; // MongoDB ObjectId from backend
   code: string;
   name: string;
   credits: number;
@@ -347,8 +348,27 @@ class TimetableService {
     semester: number;
     academic_year: string;
     title?: string;
+    working_days?: any;
+    time_slots?: any;
+    constraints?: any;
   }): Promise<any> {
     const response = await this.api.post('/timetable/generate-advanced', data);
+    return response.data;
+  }
+
+  // Genetic Algorithm-powered generation
+  async generateGeneticTimetable(data: {
+    program_id: string;
+    semester: number;
+    academic_year: string;
+    title: string;
+    population_size?: number;
+    generations?: number;
+    mutation_rate?: number;
+    crossover_rate?: number;
+    time_rules?: any;
+  }): Promise<any> {
+    const response = await this.api.post('/genetic-timetable/generate', data);
     return response.data;
   }
 

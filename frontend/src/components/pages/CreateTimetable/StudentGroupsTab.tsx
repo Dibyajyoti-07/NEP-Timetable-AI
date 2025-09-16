@@ -215,8 +215,11 @@ const StudentGroupsTab: React.FC = () => {
 
   const handleDeleteGroup = async (groupId: string) => {
     setLoading(true);
+    console.log('🗑️ Attempting to delete student group:', groupId);
+    
     try {
       await timetableService.deleteStudentGroup(groupId);
+      console.log('✅ Student group deleted from backend:', groupId);
       
       // Remove from local state
       const filteredGroups = studentGroups.filter(group => group.id !== groupId);
@@ -227,7 +230,17 @@ const StudentGroupsTab: React.FC = () => {
     } catch (err: unknown) {
       const error = err as { message?: string; response?: { data?: { detail?: string } } };
       const errorMessage = error.response?.data?.detail || error.message || 'Unknown error';
-      setError('Failed to delete student group: ' + errorMessage);
+      console.log('❌ Failed to delete student group:', { groupId, error: errorMessage });
+      
+      // If the group doesn't exist in backend but exists locally, remove it from local state
+      if (errorMessage.includes('not found')) {
+        console.log('⚠️ Group not found in backend, removing from local state');
+        const filteredGroups = studentGroups.filter(group => group.id !== groupId);
+        updateFormData('student_groups', filteredGroups);
+        setSuccess('Student group removed from local state (not found in database)');
+      } else {
+        setError('Failed to delete student group: ' + errorMessage);
+      }
     } finally {
       setLoading(false);
     }

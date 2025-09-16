@@ -200,7 +200,12 @@ const TimeConstraintsTab: React.FC = () => {
               ))}
             </Box>
             
-            <div style={{ padding: '16px', backgroundColor: '#f5f5f5' }}>
+            <div style={{ 
+              padding: '16px', 
+              background: 'linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(18,18,18,0.95) 100%)',
+              borderRadius: '8px',
+              border: '1px solid rgba(255,255,255,0.1)'
+            }}>
               <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
                 <strong>Active Working Days:</strong> {workingDaysCount} days per week
               </Typography>
@@ -344,7 +349,13 @@ const TimeConstraintsTab: React.FC = () => {
           <Divider sx={{ my: 3 }} />
 
           {/* Summary Card */}
-          <div style={{ padding: '24px', backgroundColor: '#e3f2fd', border: '1px solid #90caf9' }}>
+          <div style={{ 
+            padding: '24px', 
+            background: 'linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(18,18,18,0.95) 100%)',
+            borderRadius: '12px',
+            border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+          }}>
             <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, fontSize: '1rem', color: 'primary.main' }}>
               Schedule Summary
             </Typography>

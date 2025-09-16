@@ -16,6 +16,7 @@ from app.api.v1.endpoints import (
 )
 from app.api.v1.endpoints import rules
 from app.api.v1.endpoints import ai
+from app.api.v1.endpoints import genetic_timetable
 
 # Include all routers
 api_router.include_router(users.router, prefix="/users", tags=["Users"])
@@ -29,3 +30,4 @@ api_router.include_router(timetable.router, prefix="/timetable", tags=["Timetabl
 api_router.include_router(constraints.router, prefix="/constraints", tags=["Constraints"])
 api_router.include_router(rules.router, prefix="/rules", tags=["Rules"])
 api_router.include_router(ai.router, prefix="/ai", tags=["AI Assistance"])
+api_router.include_router(genetic_timetable.router, prefix="/genetic-timetable", tags=["Genetic Algorithm Timetable"])

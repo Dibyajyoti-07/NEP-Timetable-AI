@@ -8,7 +8,7 @@ from bson import ObjectId
 
 router = APIRouter()
 
-@router.get("/", response_model=List[Program])
+@router.get("/")
 async def get_programs(
     skip: int = Query(0, ge=0, description="Number of programs to skip"),
     limit: int = Query(100, ge=1, le=1000, description="Number of programs to return"),
@@ -25,24 +25,32 @@ async def get_programs(
     if department:
         filter_query["department"] = department
     
-    programs = await db.db.programs.find(filter_query).skip(skip).limit(limit).to_list(length=limit)
+    programs_data = await db.db.programs.find(filter_query).skip(skip).limit(limit).to_list(length=limit)
     
-    print(f"📋 Found {len(programs)} programs in database")
-    if programs:
-        print(f"📋 First program before conversion: {programs[0]}")
+    print(f"📋 Found {len(programs_data)} programs in database")
+    if programs_data:
+        print(f"📋 First program before conversion: {programs_data[0]}")
     
-    # Convert ObjectId to string for each program
-    for program in programs:
-        if "_id" in program:
-            program["id"] = str(program["_id"])
-            del program["_id"]
-            
+    # Convert to list of Pydantic models and then to dicts with proper ID handling
+    programs = []
+    for program_data in programs_data:
+        # Convert ObjectId to string before creating Pydantic model
+        if "_id" in program_data:
+            program_data["_id"] = str(program_data["_id"])
+        
+        program = Program(**program_data)
+        # Convert to dict and handle ID field
+        program_dict = program.model_dump()
+        if "_id" in program_dict:
+            program_dict["id"] = program_dict.pop("_id")
+        programs.append(program_dict)
+    
     if programs:
         print(f"📋 First program after conversion: {programs[0]}")
     
     return programs
 
-@router.get("/{program_id}", response_model=Program)
+@router.get("/{program_id}")
 async def get_program(
     program_id: str,
     current_user: User = Depends(get_current_active_user),
@@ -50,16 +58,23 @@ async def get_program(
     """
     Get a specific program by ID.
     """
-    program = await db.db.programs.find_one({"_id": ObjectId(program_id)})
-    if not program:
-        raise HTTPException(status_code=404, detail="Program not found")
-    
-    # Convert ObjectId to string
-    if "_id" in program:
-        program["id"] = str(program["_id"])
-        del program["_id"]
-    
-    return program
+    try:
+        program_data = await db.db.programs.find_one({"_id": ObjectId(program_id)})
+        if not program_data:
+            raise HTTPException(status_code=404, detail="Program not found")
+        
+        # Convert ObjectId to string before creating Pydantic model
+        if "_id" in program_data:
+            program_data["_id"] = str(program_data["_id"])
+        
+        # Convert to Pydantic model and then to dict with proper ID handling
+        program = Program(**program_data)
+        program_dict = program.model_dump()
+        if "_id" in program_dict:
+            program_dict["id"] = program_dict.pop("_id")
+        return program_dict
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/", response_model=Program)
 async def create_program(
@@ -196,6 +211,15 @@ async def get_program_courses(
                 del course["_id"]
             if "program_id" in course and isinstance(course["program_id"], ObjectId):
                 course["program_id"] = str(course["program_id"])
+            if "created_by" in course and isinstance(course["created_by"], ObjectId):
+                course["created_by"] = str(course["created_by"])
+            # Convert any other ObjectId fields that might exist
+            for key, value in course.items():
+                if isinstance(value, ObjectId):
+                    course[key] = str(value)
+                elif isinstance(value, list):
+                    # Handle lists that might contain ObjectIds (like prerequisites)
+                    course[key] = [str(item) if isinstance(item, ObjectId) else item for item in value]
         
         return courses
         

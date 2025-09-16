@@ -8,29 +8,29 @@ import MainLayout from './components/layout/MainLayout';
 import { AuthGuard } from './components/AuthGuard';
 import './App.css';
 
-// Create a custom dark theme with smaller fonts
+// Create a custom off-white theme with faded deep blue accents
 const theme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#2196f3', // Blue primary
+      main: '#2196f3',
       light: '#64b5f6',
       dark: '#1976d2',
     },
     secondary: {
-      main: '#2196f3',
+      main: '#f50057',
     },
     background: {
-      default: '#0a0a0a', // Very dark background
-      paper: '#1a1a1a', // Slightly lighter for cards
+      default: '#121212',
+      paper: '#1e1e1e',
     },
     text: {
       primary: '#ffffff',
-      secondary: '#b0b0b0',
+      secondary: 'rgba(255, 255, 255, 0.7)',
     },
-    divider: '#2196f3',
+    divider: 'rgba(255, 255, 255, 0.12)',
     action: {
-      hover: '#1a1a1a',
+      hover: 'rgba(33, 150, 243, 0.08)',
     }
   },
   typography: {
@@ -58,6 +58,38 @@ const theme = createTheme({
     MuiButton: {
       defaultProps: {
         size: 'small',
+      },
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          fontWeight: 600,
+          '&.faculty-style': {
+            background: 'linear-gradient(45deg, #1976d2, #1565c0)',
+            color: 'white',
+            padding: '8px 24px',
+            fontWeight: 600,
+            boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
+            '&:hover': {
+              background: 'linear-gradient(45deg, #1565c0, #1976d2)',
+              boxShadow: '0 6px 16px rgba(25, 118, 210, 0.4)',
+            },
+          },
+        },
+        contained: {
+          background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+          boxShadow: '0 3px 10px rgba(33, 150, 243, 0.3)',
+          '&:hover': {
+            background: 'linear-gradient(45deg, #1976d2 30%, #1cb5e0 90%)',
+            boxShadow: '0 6px 20px rgba(33, 150, 243, 0.4)',
+          },
+        },
+        outlined: {
+          borderColor: 'rgba(33, 150, 243, 0.5)',
+          '&:hover': {
+            borderColor: '#2196f3',
+            background: 'rgba(33, 150, 243, 0.08)',
+          },
+        },
       },
     },
     MuiSelect: {
@@ -166,7 +198,9 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          background: '#1a1a1a',
+          background: 'linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(18,18,18,0.95) 100%)',
+          border: '1px solid rgba(33, 150, 243, 0.3)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
         },
       },
     },
@@ -174,14 +208,77 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'none',
+          background: 'linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(18,18,18,0.95) 100%)',
+          border: '1px solid rgba(33, 150, 243, 0.3)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
         },
       },
     },
     MuiDrawer: {
       styleOverrides: {
         paper: {
-          background: '#1a1a1a',
-          borderRight: '1px solid #2196f3',
+          background: 'linear-gradient(135deg, rgba(26,26,26,0.95) 0%, rgba(18,18,18,0.95) 100%)',
+          borderRight: '1px solid rgba(33, 150, 243, 0.3)',
+        },
+      },
+    },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          background: 'linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(18,18,18,0.95) 100%)',
+          borderBottom: '1px solid rgba(33, 150, 243, 0.3)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+        },
+      },
+    },
+    MuiToolbar: {
+      styleOverrides: {
+        root: {
+          background: 'transparent',
+        },
+      },
+    },
+    MuiContainer: {
+      styleOverrides: {
+        root: {
+          background: 'transparent',
+        },
+      },
+    },
+
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          '&:hover': {
+            background: 'rgba(33, 150, 243, 0.08)',
+          },
+        },
+      },
+    },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          '&.faculty-header': {
+            color: 'white',
+            fontWeight: 700,
+            fontSize: '2rem',
+            position: 'relative',
+            zIndex: 1,
+          },
+          '&.faculty-subtitle': {
+            color: 'white',
+            opacity: 0.9,
+            fontSize: '1.1rem',
+            position: 'relative',
+            zIndex: 1,
+          },
+          '&.faculty-stats': {
+            color: 'white',
+            fontWeight: 700,
+            fontSize: '2.5rem',
+            position: 'relative',
+            zIndex: 1,
+          },
         },
       },
     },

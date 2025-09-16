@@ -1,0 +1,4 @@
+Success: False
+Theory courses: 6
+Lab courses: 3
+Error: Failed to generate a valid timetable after all attempts. Please check constraints.

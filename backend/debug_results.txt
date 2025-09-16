@@ -1,0 +1,6 @@
+Theory slots: 16
+Lab slots: 8
+Lab scheduling result: True
+Current schedule entries: 0
+
+Schedule entries:

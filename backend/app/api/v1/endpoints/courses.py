@@ -1,4 +1,4 @@
-﻿from typing import List, Optional
+from typing import List, Optional
 from fastapi import APIRouter, Query, Depends, HTTPException, status
 from app.services.auth import get_current_active_user
 from app.models.user import User
@@ -40,6 +40,16 @@ async def get_courses(
                 del course["_id"]
             if "program_id" in course and isinstance(course["program_id"], ObjectId):
                 course["program_id"] = str(course["program_id"])
+            if "faculty_id" in course and isinstance(course["faculty_id"], ObjectId):
+                course["faculty_id"] = str(course["faculty_id"])
+            if "created_by" in course:
+                course["created_by"] = str(course["created_by"])
+            # Convert any other ObjectId fields
+            for key, value in course.items():
+                if isinstance(value, ObjectId):
+                    course[key] = str(value)
+                elif isinstance(value, list):
+                    course[key] = [str(item) if isinstance(item, ObjectId) else item for item in value]
         
         return courses
         

@@ -104,27 +104,33 @@ const CourseInformationTab: React.FC = () => {
     // }
 
     setLoading(true);
+    let backendCreationSuccessful = false;
+    let courseId = Date.now().toString(); // Default fallback ID
+    
     try {
-      // Prepare course data for backend - use dummy values for testing
+      // Prepare course data for backend
       const courseData: Partial<Course> = {
         ...newCourse,
-        program_id: formData.program_id || undefined,  // Use undefined if not set
-        semester: formData.semester || 1,              // Use 1 if not set
+        program_id: formData.program_id || undefined,
+        semester: formData.semester || 1,
       };
 
-      console.log('🚨 Frontend: Sending course data:', courseData);
-      console.log('🚨 Frontend: formData.program_id:', formData.program_id);
-      console.log('🚨 Frontend: formData.semester:', formData.semester);
+      console.log('🚨 Frontend: Attempting to create course in backend:', courseData);
 
-      // Create course in backend
-      const createdCourse = await timetableService.createCourse(courseData as Course);
+      try {
+        // Try to create course in backend first
+        const createdCourse = await timetableService.createCourse(courseData as Course);
+        courseId = createdCourse.id || (createdCourse as any)._id || courseId;
+        backendCreationSuccessful = true;
+        console.log('✅ Frontend: Course created in backend with ID:', courseId);
+      } catch (backendError) {
+        console.log('⚠️ Frontend: Backend creation failed, using local ID:', backendError);
+        // Continue with local creation using timestamp ID
+      }
       
-      console.log('✅ Frontend: Course created successfully:', createdCourse);
-      console.log('✅ Frontend: Current formData.courses length:', formData.courses.length);
-      
-      // Add to local form data
+      // Add to local form data regardless of backend success
       const course: Course = {
-        id: createdCourse.id || Date.now().toString(),
+        id: courseId,
         code: newCourse.code || '',
         name: newCourse.name || '',
         credits: newCourse.credits || 0,
@@ -137,8 +143,6 @@ const CourseInformationTab: React.FC = () => {
       
       updateFormData('courses', [...formData.courses, course]);
       
-      console.log('✅ Frontend: New courses array length should be:', formData.courses.length + 1);
-      
       // Reset form
       setNewCourse({
         code: '',
@@ -149,8 +153,11 @@ const CourseInformationTab: React.FC = () => {
         min_per_session: 50
       });
 
-      setSuccess('Course added successfully');
-      loadAvailableCourses(); // Refresh available courses
+      setSuccess(backendCreationSuccessful ? 'Course added successfully to database' : 'Course added locally (will sync to database when edited)');
+      
+      if (backendCreationSuccessful) {
+        loadAvailableCourses(); // Refresh available courses only if backend was successful
+      }
       
     } catch (err: any) {
       setError('Failed to add course: ' + (err.message || 'Unknown error'));
@@ -161,17 +168,35 @@ const CourseInformationTab: React.FC = () => {
 
   const handleDeleteCourse = async (id: string, courseId?: string) => {
     setLoading(true);
+    let backendDeletionSuccessful = false;
+    
     try {
       // Delete from backend if it has a backend ID
       if (courseId) {
-        await timetableService.deleteCourse(courseId);
+        try {
+          await timetableService.deleteCourse(courseId);
+          backendDeletionSuccessful = true;
+          console.log('✅ Course deleted from backend:', courseId);
+        } catch (backendError) {
+          console.log('⚠️ Backend deletion failed, proceeding with local deletion:', backendError);
+          // Continue with local deletion even if backend fails
+        }
       }
       
       // Remove from local form data
       updateFormData('courses', formData.courses.filter(course => course.id !== id));
       
-      setSuccess('Course deleted successfully');
-      loadAvailableCourses(); // Refresh available courses
+      // Provide appropriate success message
+      if (courseId) {
+        setSuccess(backendDeletionSuccessful ? 'Course deleted from database successfully' : 'Course removed locally (database deletion failed)');
+      } else {
+        setSuccess('Local course deleted successfully');
+      }
+      
+      // Refresh available courses only if backend deletion was successful
+      if (backendDeletionSuccessful) {
+        loadAvailableCourses();
+      }
       
     } catch (err: any) {
       setError('Failed to delete course: ' + (err.message || 'Unknown error'));
@@ -200,32 +225,58 @@ const CourseInformationTab: React.FC = () => {
 
     setLoading(true);
     try {
-      // Check if this course exists in the backend (has a proper MongoDB ObjectId)
-      // MongoDB ObjectIds are 24-character hex strings, timestamp IDs are longer numbers
-      const isBackendCourse = editingCourse.id && 
-        editingCourse.id.length === 24 && 
-        /^[0-9a-fA-F]{24}$/.test(editingCourse.id);
-      
       console.log('🔧 Frontend: Editing course:', editingCourse);
-      console.log('🔧 Frontend: Is backend course?', isBackendCourse);
       console.log('🔧 Frontend: Course ID:', editingCourse.id);
       
-      if (isBackendCourse) {
-        // Update in backend if it's a real backend course
-        const updatedCourseData = {
-          ...editingCourse,
-          ...editFormData,
-        };
-        console.log('🔧 Frontend: Updating backend course with data:', updatedCourseData);
-        await timetableService.updateCourse(editingCourse.id!, updatedCourseData);
+      // Check if this is a locally created course (timestamp ID) that needs to be created in backend first
+      const isLocalCourse = editingCourse.id && editingCourse.id.match(/^\d{13}$/);
+      let backendUpdateSuccessful = false;
+      let finalCourseId = editingCourse.id;
+      
+      if (isLocalCourse) {
+        // This is a local course, create it in backend first
+        try {
+          console.log('🔧 Frontend: Creating local course in backend first:', editingCourse);
+          const courseToCreate = {
+            code: editFormData.code || editingCourse.code,
+            name: editFormData.name || editingCourse.name,
+            credits: editFormData.credits ?? editingCourse.credits,
+            type: editFormData.type || editingCourse.type,
+            hours_per_week: editFormData.hours_per_week ?? editingCourse.hours_per_week,
+            min_per_session: editFormData.min_per_session ?? editingCourse.min_per_session,
+            program_id: formData.program_id,
+            semester: formData.semester || 1
+          };
+          
+          const createdCourse = await timetableService.createCourse(courseToCreate);
+           finalCourseId = createdCourse.id || (createdCourse as any)._id || editingCourse.id;
+          backendUpdateSuccessful = true;
+          console.log('🔧 Frontend: Local course created in backend with ID:', finalCourseId);
+        } catch (backendError) {
+          console.log('🔧 Frontend: Failed to create local course in backend:', backendError);
+          // Continue with local update only
+        }
       } else {
-        console.log('🔧 Frontend: Skipping backend update for local course');
+        // This is an existing backend course, try to update it
+        try {
+          const updatedCourseData = {
+            ...editingCourse,
+            ...editFormData,
+          };
+          console.log('🔧 Frontend: Attempting to update existing backend course:', updatedCourseData);
+          await timetableService.updateCourse(editingCourse.id!, updatedCourseData);
+          backendUpdateSuccessful = true;
+          console.log('🔧 Frontend: Backend update successful');
+        } catch (backendError) {
+          console.log('🔧 Frontend: Backend update failed, proceeding with local update only:', backendError);
+          // Continue with local update even if backend fails
+        }
       }
       
       // Update in local form data regardless
       const updatedCourses = formData.courses.map(course => 
         course.id === editingCourse.id 
-          ? { ...course, ...editFormData }
+          ? { ...course, ...editFormData, id: finalCourseId }
           : course
       );
       
@@ -233,10 +284,10 @@ const CourseInformationTab: React.FC = () => {
       
       setEditingCourse(null);
       setEditFormData({});
-      setSuccess('Course updated successfully');
+      setSuccess(backendUpdateSuccessful ? 'Course updated successfully in database' : 'Course updated locally');
       
-      // Only refresh available courses if we updated a backend course
-      if (isBackendCourse) {
+      // Refresh available courses if backend update was successful
+      if (backendUpdateSuccessful) {
         loadAvailableCourses();
       }
       
@@ -747,7 +798,19 @@ const CourseInformationTab: React.FC = () => {
                           </IconButton>
                           <IconButton
                             size="small"
-                            onClick={() => handleDeleteCourse(course.id || '', course.id)}
+                            onClick={() => {
+                              // Check if this is a local course (timestamp ID) or backend course
+                              const isLocalCourse = course.id && course.id.match(/^\d{13}$/);
+                              const courseWithId = course as Course & { _id?: string };
+                              console.log('🗑️ Delete button clicked:', { courseId: course.id, backendId: courseWithId._id, isLocalCourse });
+                              
+                              // For local courses, don't pass any backend ID
+                              // For backend courses, pass the MongoDB ObjectId
+                              const backendCourseId = isLocalCourse ? undefined : (courseWithId._id && !courseWithId._id.match(/^\d{13}$/) ? courseWithId._id : undefined);
+                              console.log('🗑️ Calling handleDeleteCourse with:', { localId: course.id, backendId: backendCourseId });
+                              
+                              handleDeleteCourse(course.id || '', backendCourseId);
+                            }}
                             disabled={loading || !!editingCourse}
                             sx={{
                               bgcolor: alpha(theme.palette.error.main, 0.1),
@@ -776,7 +839,14 @@ const CourseInformationTab: React.FC = () => {
           </Table>
         </TableContainer>
 
-            <Box sx={{ mt: 3, p: 2, backgroundColor: 'primary.dark', borderRadius: 1, border: '1px solid', borderColor: 'primary.main' }}>
+            <Box sx={{ 
+              mt: 3, 
+              p: 2, 
+              background: 'linear-gradient(135deg, rgba(30,30,30,0.95) 0%, rgba(18,18,18,0.95) 100%)',
+              borderRadius: 2,
+              border: '1px solid rgba(255,255,255,0.1)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+            }}>
               <Typography variant="body2" sx={{ fontSize: '0.875rem', color: 'primary.contrastText', fontWeight: 600 }}>
                 <strong>Total Credits:</strong> {formData.courses.reduce((sum, course) => sum + course.credits, 0)} |{' '}
                 <strong>Total Hours/Week:</strong> {formData.courses.reduce((sum, course) => sum + course.hours_per_week, 0)}

@@ -152,8 +152,8 @@ interface TimetableContextType {
 
 const defaultFormData: TimetableFormData = {
   title: '',
-  program_id: '',
-  semester: 1,
+  program_id: '68b5c517e73858dcb11d37e4', // Updated to use the correct program ID from database
+  semester: 5, // Updated to use semester 5 which has course data
   academic_year: '2024-25',
   department: '',
   
@@ -168,8 +168,8 @@ const defaultFormData: TimetableFormData = {
   },
 
   time_slots: {
-    start_time: '09:00',
-    end_time: '17:00',
+    start_time: '11:00',
+    end_time: '16:30',
     slot_duration: 50,
     break_duration: 10,
     lunch_break: true,
@@ -179,7 +179,19 @@ const defaultFormData: TimetableFormData = {
 
   courses: [],
   faculty: [],
-  student_groups: [],
+  student_groups: [
+    {
+      id: 'default-group-1',
+      name: 'CSE 5th Semester - Section A',
+      course_ids: [],
+      year: 3,
+      semester: '5',
+      section: 'A',
+      student_strength: 60,
+      group_type: 'Regular Class',
+      program_id: '68b5c517e73858dcb11d37e4'
+    }
+  ],
   rooms: [],
 
   constraints: {
@@ -273,8 +285,8 @@ export const TimetableProvider: React.FC<TimetableProviderProps> = ({ children }
         
         // Time slots from metadata
         time_slots: metadata.time_slots || {
-          start_time: '09:00',
-          end_time: '17:00',
+          start_time: '11:00',
+          end_time: '16:30',
           slot_duration: 60,
           break_duration: 15,
           lunch_break: true,
