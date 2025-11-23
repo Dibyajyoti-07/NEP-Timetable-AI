@@ -20,7 +20,7 @@ class Settings(BaseSettings):
         raise ValueError(v)
 
     # Database Configuration
-    MONGODB_URL: str = "mongodb+srv://dibyajyotisarkar07:Dibyajyoti2004@cluster0.zbf2c.mongodb.net"
+    MONGODB_URL: str = "Your MongoDB URI"
     DATABASE_NAME: str = "timetable_db"
     
     # Security Configuration
