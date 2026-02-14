@@ -19,36 +19,45 @@ async def get_programs(
     """
     Get all academic programs with optional filtering.
     """
-    filter_query = {}
-    if program_type:
-        filter_query["type"] = program_type
-    if department:
-        filter_query["department"] = department
-    
-    programs_data = await db.db.programs.find(filter_query).skip(skip).limit(limit).to_list(length=limit)
-    
-    print(f"📋 Found {len(programs_data)} programs in database")
-    if programs_data:
-        print(f"📋 First program before conversion: {programs_data[0]}")
-    
-    # Convert to list of Pydantic models and then to dicts with proper ID handling
-    programs = []
-    for program_data in programs_data:
-        # Convert ObjectId to string before creating Pydantic model
-        if "_id" in program_data:
-            program_data["_id"] = str(program_data["_id"])
+    try:
+        # Check if database is connected
+        if getattr(db, 'db', None) is None:
+            raise Exception("Database not connected")
         
-        program = Program(**program_data)
-        # Convert to dict and handle ID field
-        program_dict = program.model_dump()
-        if "_id" in program_dict:
-            program_dict["id"] = program_dict.pop("_id")
-        programs.append(program_dict)
-    
-    if programs:
-        print(f"📋 First program after conversion: {programs[0]}")
-    
-    return programs
+        filter_query = {}
+        if program_type:
+            filter_query["type"] = program_type
+        if department:
+            filter_query["department"] = department
+        
+        programs_data = await db.db.programs.find(filter_query).skip(skip).limit(limit).to_list(length=limit)
+        
+        print(f"📋 Found {len(programs_data)} programs in database")
+        if programs_data:
+            print(f"📋 First program before conversion: {programs_data[0]}")
+        
+        # Convert to list of Pydantic models and then to dicts with proper ID handling
+        programs = []
+        for program_data in programs_data:
+            # Convert ObjectId to string before creating Pydantic model
+            if "_id" in program_data:
+                program_data["_id"] = str(program_data["_id"])
+            
+            program = Program(**program_data)
+            # Convert to dict and handle ID field
+            program_dict = program.model_dump()
+            if "_id" in program_dict:
+                program_dict["id"] = program_dict.pop("_id")
+            programs.append(program_dict)
+        
+        if programs:
+            print(f"📋 First program after conversion: {programs[0]}")
+        
+        return programs
+    except Exception as e:
+        # If database query fails, return empty array for dev mode
+        print(f"[PROGRAMS] Database query failed: {e}, returning empty array for dev mode")
+        return []
 
 @router.get("/{program_id}")
 async def get_program(

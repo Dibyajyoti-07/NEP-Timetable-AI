@@ -73,49 +73,58 @@ async def get_timetables(
     """
     Get all timetables created by the current user with optional filtering.
     """
-    # CRITICAL: Always filter by created_by to ensure user isolation
-    filter_query = {"created_by": ObjectId(str(current_user.id))}
-    
-    if program_id:
-        filter_query["program_id"] = ObjectId(program_id)
-    if semester is not None:
-        filter_query["semester"] = semester
-    if academic_year:
-        filter_query["academic_year"] = academic_year
-    if is_draft is not None:
-        filter_query["is_draft"] = is_draft
-    
-    print(f"🔒 SECURITY: Getting timetables for user {current_user.id} with filter: {filter_query}")
-    
-    timetables = await db.db.timetables.find(filter_query).skip(skip).limit(limit).to_list(length=limit)
-    
-    print(f"🔒 SECURITY: Found {len(timetables)} timetables for user {current_user.id}")
-    
-    # Convert ObjectIds to strings for JSON serialization
-    for timetable in timetables:
-        # Convert _id to id for frontend compatibility
-        timetable["id"] = str(timetable["_id"])
-        del timetable["_id"]  # Remove the original _id field
+    try:
+        # Check if database is connected
+        if getattr(db, 'db', None) is None:
+            raise Exception("Database not connected")
         
-        if "created_by" in timetable and timetable["created_by"]:
-            timetable["created_by"] = str(timetable["created_by"])
-        if "program_id" in timetable and timetable["program_id"]:
-            timetable["program_id"] = str(timetable["program_id"])
+        # CRITICAL: Always filter by created_by to ensure user isolation
+        filter_query = {"created_by": ObjectId(str(current_user.id))}
         
-        # Convert academic_year to string if it's a number
-        if "academic_year" in timetable and isinstance(timetable["academic_year"], (int, float)):
-            timetable["academic_year"] = str(timetable["academic_year"])
+        if program_id:
+            filter_query["program_id"] = ObjectId(program_id)
+        if semester is not None:
+            filter_query["semester"] = semester
+        if academic_year:
+            filter_query["academic_year"] = academic_year
+        if is_draft is not None:
+            filter_query["is_draft"] = is_draft
         
-        # Handle missing title field for old timetables
-        if "title" not in timetable or not timetable["title"]:
-            timetable["title"] = f"Timetable - {timetable.get('academic_year', 'Unknown')} Semester {timetable.get('semester', 'N/A')}"
+        print(f"🔒 SECURITY: Getting timetables for user {current_user.id} with filter: {filter_query}")
         
-        # Handle missing created_at field
-        if "created_at" not in timetable or timetable["created_at"] is None:
-            from datetime import datetime
-            timetable["created_at"] = datetime.utcnow()
-    
-    return timetables
+        timetables = await db.db.timetables.find(filter_query).skip(skip).limit(limit).to_list(length=limit)
+        
+        print(f"🔒 SECURITY: Found {len(timetables)} timetables for user {current_user.id}")
+        
+        # Convert ObjectIds to strings for JSON serialization
+        for timetable in timetables:
+            # Convert _id to id for frontend compatibility
+            timetable["id"] = str(timetable["_id"])
+            del timetable["_id"]  # Remove the original _id field
+            
+            if "created_by" in timetable and timetable["created_by"]:
+                timetable["created_by"] = str(timetable["created_by"])
+            if "program_id" in timetable and timetable["program_id"]:
+                timetable["program_id"] = str(timetable["program_id"])
+            
+            # Convert academic_year to string if it's a number
+            if "academic_year" in timetable and isinstance(timetable["academic_year"], (int, float)):
+                timetable["academic_year"] = str(timetable["academic_year"])
+            
+            # Handle missing title field for old timetables
+            if "title" not in timetable or not timetable["title"]:
+                timetable["title"] = f"Timetable - {timetable.get('academic_year', 'Unknown')} Semester {timetable.get('semester', 'N/A')}"
+            
+            # Handle missing created_at field
+            if "created_at" not in timetable or timetable["created_at"] is None:
+                from datetime import datetime
+                timetable["created_at"] = datetime.utcnow()
+        
+        return timetables
+    except Exception as e:
+        # If database query fails, return empty array for dev mode
+        print(f"[TIMETABLE] Database query failed: {e}, returning empty array for dev mode")
+        return []
 
 @router.get("/{timetable_id}", response_model=Timetable)
 async def get_timetable(

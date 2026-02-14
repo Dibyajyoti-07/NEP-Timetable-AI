@@ -18,6 +18,7 @@ import {
   useTheme,
   useMediaQuery,
 } from '@mui/material';
+import logo from '../../assets/APP LOGO (1).svg';
 import {
   Menu as MenuIcon,
   Dashboard as DashboardIcon,
@@ -108,9 +109,12 @@ const MainLayout: React.FC = () => {
   const drawer = (
     <Box>
       <Toolbar>
-        <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 'bold' }}>
-          AI Timetable
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <img src={logo} alt="VINYASA" style={{ height: '64px', width: 'auto' }} />
+            <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
+              VINYASA
+            </Typography>
+          </Box>
       </Toolbar>
       <Divider />
       <List>
@@ -170,7 +174,7 @@ const MainLayout: React.FC = () => {
               </IconButton>
               
               <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-                AI-Based Timetable Generation System
+                VINYASA - AI Timetable System
               </Typography>
               
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -261,7 +265,7 @@ const MainLayout: React.FC = () => {
               </IconButton>
               <CalendarIcon sx={{ mr: 0.25, color: 'primary.main' }} />
               <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, textAlign: 'left' }}>
-                Edit Timetable - {timetableName}
+                VINYASA - Edit Timetable - {timetableName}
               </Typography>
               
               <div style={{ display: 'flex', alignItems: 'center' }}>

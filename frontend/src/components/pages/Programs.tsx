@@ -56,7 +56,7 @@ interface ProgramStats {
   program_info: Program;
 }
 
-const PROGRAM_TYPES = ['FYUP', 'B.Ed', 'M.Ed', 'ITEP'];
+const PROGRAM_TYPES = ['FYUP', 'B.Ed', 'M.Ed', 'ITEP', 'B.Tech', 'M.Tech', 'B.Sc', 'M.Sc', 'BCA', 'MCA'];
 
 const Programs: React.FC = () => {
   const { user } = useAuthStore();
@@ -496,7 +496,10 @@ const Programs: React.FC = () => {
             <Button
               variant="contained"
               startIcon={<AddIcon />}
-              onClick={() => setCreateDialogOpen(true)}
+              onClick={() => {
+                resetForm();
+                setCreateDialogOpen(true);
+              }}
               disabled={!isAdmin}
             >
               Add Program
@@ -652,7 +655,10 @@ const Programs: React.FC = () => {
       {/* Create Program Dialog */}
       <Dialog
         open={createDialogOpen}
-        onClose={() => setCreateDialogOpen(false)}
+        onClose={() => {
+          resetForm();
+          setCreateDialogOpen(false);
+        }}
         maxWidth="md"
         fullWidth
       >
@@ -733,7 +739,10 @@ const Programs: React.FC = () => {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCreateDialogOpen(false)}>Cancel</Button>
+          <Button onClick={() => {
+            resetForm();
+            setCreateDialogOpen(false);
+          }}>Cancel</Button>
           <Button variant="contained" onClick={handleCreate}>
             Create Program
           </Button>
