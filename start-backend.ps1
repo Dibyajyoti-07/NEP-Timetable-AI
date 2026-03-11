@@ -1,5 +1,11 @@
 # PowerShell script to start the AI Timetable Backend
-Write-Host "🚀 Starting AI Timetable Backend..." -ForegroundColor Green
+Write-Host "Starting AI Timetable Backend..." -ForegroundColor Green
+
+# Ensure Node.js and npm are on the PATH (refreshes from registry)
+$regUserPath = [Environment]::GetEnvironmentVariable('Path','User')
+$regMachinePath = [Environment]::GetEnvironmentVariable('Path','Machine')
+$env:Path = "$regMachinePath;$regUserPath"
+
 Set-Location backend
 Write-Host "📁 Changed to backend directory" -ForegroundColor Yellow
 

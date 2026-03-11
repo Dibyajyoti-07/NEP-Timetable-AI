@@ -6,14 +6,16 @@ Write-Host "===================================================" -ForegroundColo
 # Function to start backend
 function Start-Backend {
     Write-Host " Starting Backend (FastAPI)..." -ForegroundColor Yellow
-    Start-Process PowerShell -ArgumentList "-Command", "cd 'D:\SIH\Copilot Timetable Ai'; .\start-backend.ps1" -WindowStyle Normal
+    $rootDir = $PSScriptRoot
+    Start-Process PowerShell -ArgumentList "-Command", "cd '$rootDir'; .\start-backend.ps1" -WindowStyle Normal
     Write-Host " Backend starting in new window" -ForegroundColor Green
 }
 
 # Function to start frontend
 function Start-Frontend {
     Write-Host " Starting Frontend (React)..." -ForegroundColor Yellow
-    Start-Process PowerShell -ArgumentList "-Command", "cd 'D:\SIH\Copilot Timetable Ai\frontend'; npm run dev" -WindowStyle Normal
+    $rootDir = $PSScriptRoot
+    Start-Process PowerShell -ArgumentList "-Command", "`$regUserPath = [Environment]::GetEnvironmentVariable('Path','User'); `$regMachinePath = [Environment]::GetEnvironmentVariable('Path','Machine'); `$env:Path = `"`$regMachinePath;`$regUserPath`"; cd '$rootDir\frontend'; npm run dev" -WindowStyle Normal
     Write-Host " Frontend starting in new window" -ForegroundColor Green
 }
 

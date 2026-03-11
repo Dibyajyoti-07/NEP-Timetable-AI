@@ -1,8 +1,13 @@
+import os
 import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
+from dotenv import load_dotenv
+
+load_dotenv()
+MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
 
 async def check_users():
-    client = AsyncIOMotorClient('mongodb+srv://dibyajyotisarkar07:Dibya2004@cluster0.zbf2c.mongodb.net')
+    client = AsyncIOMotorClient(MONGODB_URL)
     db = client['timetable_db']
     
     print("=== Checking Users in Database ===")

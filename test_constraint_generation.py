@@ -1,9 +1,14 @@
+import os
 import pymongo
 import requests
 import json
+from dotenv import load_dotenv
+
+load_dotenv("backend/.env")
 
 # Connect to MongoDB Atlas
-client = pymongo.MongoClient('mongodb+srv://dibyajyotisarkar07:Dibyajyoti2004@cluster0.zbf2c.mongodb.net')
+MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
+client = pymongo.MongoClient(MONGODB_URL)
 db = client['timetable_db']
 
 # Get the first program
