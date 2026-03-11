@@ -1,5 +1,11 @@
 # PowerShell script to activate virtual environment
 Write-Host "Activating virtual environment..." -ForegroundColor Green
+
+# Refresh PATH from registry so Node.js/npm are always available
+$regUserPath = [Environment]::GetEnvironmentVariable('Path','User')
+$regMachinePath = [Environment]::GetEnvironmentVariable('Path','Machine')
+$env:Path = "$regMachinePath;$regUserPath"
+
 & "$PSScriptRoot\venv\Scripts\Activate.ps1"
 Write-Host "Environment activated!" -ForegroundColor Green
 Write-Host ""
