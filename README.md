@@ -80,7 +80,7 @@ A modern full-stack intelligent timetable generation system with React frontend 
 
 # Option 2: Direct command (recommended for development)
 1. cd backend
-2. .\activate.ps1
+2. venv\Scripts\Activate.ps1
 3.  python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 #### Frontend Only
